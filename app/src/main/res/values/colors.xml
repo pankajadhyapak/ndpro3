@@ -8,4 +8,14 @@
     <color name="material_red_700">#D50000</color>
     <color name="material_green_700">#00C853</color>
 
+
+    <color name="chart_legend_color">@android:color/white</color>
+    <color name="chart_dataset_color">@color/material_green_700</color>
+    <color name="chart_dataset_fillcolor">@color/material_red_700</color>
+    <color name="chart_dataset_circlecolor">@color/material_red_700</color>
+    <color name="chart_description_color">@android:color/white</color>
+    <color name="chart_xaxis_color">@android:color/white</color>
+    <color name="chart_yaxis_left_color">@android:color/white</color>
+    <color name="chart_yaxisright_color">@android:color/white</color>
+
 </resources>

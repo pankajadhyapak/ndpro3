@@ -31,5 +31,20 @@
 
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
+    <string name="add_stock_button">Add Stock to your list</string>
+    <string name="empty_symbol_msg">Symbol Cannot be Empty</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
+
+    <string name="label_widget_nostocks">No stocks added</string>
+
+    <string name="label_chart_stock_price">Stock price over time (Date descending)</string>
+    <string name="legend_chart_stock_price">Stock price</string>
+    <string name="widget_title">@string/app_name</string>
+
+    <string name="currency_symbol">$</string>
+
+    <string name="CD_add_new_stock_symbol">Add new stock symbol</string>
+    <string name="CD_convert_units_between_dollar_and_percentage">Convert units between dollar and percentage</string>
 </resources>
