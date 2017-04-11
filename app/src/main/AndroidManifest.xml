@@ -37,6 +37,7 @@
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <service
             android:name=".widget.StockWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
@@ -51,7 +52,7 @@
                 android:resource="@xml/stock_widget_info" />
         </receiver>
 
-        <activity android:name=".ui.StockDetailActivity"></activity>
+        <activity android:name=".ui.StockDetailActivity"/>
     </application>
 
 </manifest>

@@ -12,7 +12,7 @@
         android:background="@color/colorPrimary"
         android:padding="8dp"
         android:id="@+id/widgetTitle"
-        android:text="Todays Stock"
+        android:text="@string/todays_stock"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#fff"
         android:textAlignment="center"

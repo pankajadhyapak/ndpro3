@@ -2,6 +2,7 @@ package com.udacity.stockhawk.sync;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.widget.StockWidget;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,39 +79,64 @@ public final class QuoteSyncJob {
 
 
                 Stock stock = quotes.get(symbol);
-                StockQuote quote = stock.getQuote();
-                Timber.d(quote.toString());
+                if (stock != null) {
 
-                if(quote.getBid() != null && quote.getChangeInPercent() != null && quote.getChange() != null) {
 
-                    float price = quote.getPrice().floatValue();
-                    float change = quote.getChange().floatValue();
-                    float percentChange = quote.getChangeInPercent().floatValue();
+                    StockQuote quote = stock.getQuote();
+                    Timber.d(quote.toString());
 
-                    // WARNING! Don't request historical data for a stock that doesn't exist!
-                    // The request will hang forever X_x
-                    List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
+                    if (quote.getBid() != null && quote.getChangeInPercent() != null && quote.getChange() != null) {
 
-                    StringBuilder historyBuilder = new StringBuilder();
+                        float price = quote.getPrice().floatValue();
+                        float change = quote.getChange().floatValue();
+                        float percentChange = quote.getChangeInPercent().floatValue();
 
-                    for (HistoricalQuote it : history) {
-                        historyBuilder.append(it.getDate().getTimeInMillis());
-                        historyBuilder.append(", ");
-                        historyBuilder.append(it.getClose());
-                        historyBuilder.append("\n");
+                        // WARNING! Don't request historical data for a stock that doesn't exist!
+                        // The request will hang forever X_x
+                        List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
+
+                        StringBuilder historyBuilder = new StringBuilder();
+
+                        for (HistoricalQuote it : history) {
+                            historyBuilder.append(it.getDate().getTimeInMillis());
+                            historyBuilder.append(", ");
+                            historyBuilder.append(it.getClose());
+                            historyBuilder.append("\n");
+                        }
+
+                        ContentValues quoteCV = new ContentValues();
+                        quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
+                        quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
+                        quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
+                        quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
+
+
+                        quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
+
+                        quoteCVs.add(quoteCV);
+
+                        Intent intent = new Intent(context, StockWidget.class);
+                        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                        int[] widgetIds = AppWidgetManager.getInstance(context)
+                                .getAppWidgetIds(new ComponentName(
+                                        context,
+                                        StockWidget.class
+                                ));
+                        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds);
+                        context.sendBroadcast(intent);
+                    } else {
+                        // create a handler to post messages to the main thread
+                        Handler mHandler = new Handler(getMainLooper());
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                PrefUtils.removeStock(context, symbol);
+                                Toast.makeText(context, "Symbol Not Found !!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                     }
-
-                    ContentValues quoteCV = new ContentValues();
-                    quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
-                    quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
-                    quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
-                    quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
-
-
-                    quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
-
-                    quoteCVs.add(quoteCV);
-                }else{
+                } else {
                     // create a handler to post messages to the main thread
                     Handler mHandler = new Handler(getMainLooper());
                     mHandler.post(new Runnable() {

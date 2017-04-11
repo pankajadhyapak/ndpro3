@@ -1,5 +1,7 @@
 package com.udacity.stockhawk.ui;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -87,6 +89,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
                 PrefUtils.removeStock(MainActivity.this, symbol);
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                Intent intent = new Intent(MainActivity.this, StockWidget.class);
+                intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                int[] widgetIds = AppWidgetManager.getInstance(MainActivity.this)
+                        .getAppWidgetIds(new ComponentName(
+                                MainActivity.this,
+                                StockWidget.class
+                        ));
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds);
+                MainActivity.this.sendBroadcast(intent);
             }
         }).attachToRecyclerView(stockRecyclerView);
 
